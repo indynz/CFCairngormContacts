@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:business="com.nagpals.contact.business.*"
+	xmlns:control="com.nagpals.contact.control.*"
+	xmlns:view="com.nagpals.contact.view.*"
+	pageTitle="Contacts Application"
+	layout="absolute"
+> 
+
+<!-- ========================================================================== -->
+	
+	<!-- the ServiceLocator where we specify the remote services -->
+	<business:Services id="contactServices"/>
+	
+	<!-- the FrontController, containing Commands specific to this appliation -->
+	<control:ContactController id="controller"/>
+	
+<!-- ========================================================================== -->
+
+	<mx:Panel id="contact" layout="absolute" top="10" bottom="10" width="450" horizontalCenter="0" title="Sample Cairngorm Contacts">
+		<view:ContactList id="list" horizontalCenter="0" bottom="172" top="10"/>
+		<view:ContactForm id="form" bottom="0" height="165" horizontalCenter="0"/>
+	</mx:Panel>
+	
+</mx:Application>

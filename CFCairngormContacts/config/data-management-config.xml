@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="data-service" 
+    class="flex.data.DataService" 
+    messageTypes="flex.data.messages.DataMessage">
+
+    <adapters>
+        <adapter-definition id="coldfusion-dao" class="coldfusion.flex.CFDataServicesAdapter" default="true"/>
+        <adapter-definition id="actionscript" class="flex.data.adapters.ASObjectAdapter" />
+        <adapter-definition id="java-dao" class="flex.data.adapters.JavaAdapter"/>
+    </adapters>
+
+    <!-- ======================================== -->
+    <!-- ColdFusion - Contact sample application  -->
+    <!-- ======================================== -->
+    <destination id="cfcontact">
+        <!--
+            Use the ColdFusion adapter for any CF specific destinations
+        -->
+        <adapter ref="coldfusion-dao"/>
+
+        <!--
+            Use the ColdFusion configured channels which have
+            the instantiate-types flag set to false.
+        -->
+        <channels>
+            <channel ref="cf-polling-amf"/>
+        </channels>
+
+        <properties>
+            <!-- The component name or path on the CF server -->
+            <component>samples.contact.ContactAssembler</component>
+
+            <!-- Either "application" or "request"  -->
+            <scope>request</scope>
+            
+            <!-- 
+                Should we look for "getFoo" or "setFoo" when translating an 
+                ActionScript object to a CFC?  If not found, the value is set in the
+                "this" scope.  If your CFCs don't have getters and setters, 
+                (they use the this scope) set this to false for better performance.
+                Optional, Default is true - look for accessor functions.
+            -->
+            <use-accessors>true</use-accessors>
+
+            <!-- 
+                Should we create CFML Structures instead of value objects
+                when translating an ActionScript object with a remote alias?
+                Optional, Default is false (use CFCs) 
+             -->
+            <use-structs>false</use-structs>
+            
+            
+            <!--
+               The hostname or IP address of the CF host.
+               If Data Services is installed as part of CF, you omit this.
+               If Data Services runs outside of CF, you must define this.
+               
+            <hostname>localhost</hostname>
+            -->
+
+            <!--
+                This is the ID of the ColdFusion Data Management service as configured
+                in the ColdFusion Administrator.
+                Only needed if you have more than one instance of CF on a machine
+                and Data Services is not installed as part of CF.
+                
+            <identity>default</identity>
+            -->
+
+            <!--
+               Credentials to pass to the assembler CFC for all clients
+               Generally better to use setRemoteCredentials() API on client
+
+            <remote-username></remote-username>
+            <remote-password></remote-password>
+            -->
+
+            <!-- Define the resolution rules and access level of the cfc being invoked -->
+            <access>
+                <!-- allow "public" (and remote) or just "remote" methods to be invoked -->
+                <method-access-level>remote</method-access-level>
+            </access>
+
+            <!-- Optional controls for forcing property names to lowercase when converting to ActionScript -->
+            <property-case>
+                <!-- cfc property names -->
+                <force-cfc-lowercase>false</force-cfc-lowercase>
+
+                <!-- Query column names -->
+                <force-query-lowercase>false</force-query-lowercase>
+
+                <!-- struct keys -->
+                <force-struct-lowercase>false</force-struct-lowercase>
+            </property-case>
+
+            <metadata>
+                <identity property="contactId"/>
+                <!-- 
+                    Optional, If the Assembler fill routine returns a query, 
+                    you must define an Actionscript type for the rows.
+                -->
+                <query-row-type>samples.contact.Contact</query-row-type>
+            </metadata>
+
+            <network>
+              <!-- Add network elements here -->
+            </network>
+
+            <server>
+                <!--
+                   The method declarations are ignored for CFC Assemblers,
+                   with the exception of the fill-method settings.
+                   No parameters are defined here, unlike Java.
+                   Any arguments provided via the AS call are passed along to the CFC,
+                   just use optional arguments when defining the CFC.
+                -->
+                <fill-method>
+                    <!--
+                        Does the assembler have a "fill-contains" method?
+                        This method is used to determine whether to refresh the fill.
+                        If the specified method returns true the fill is re-executed
+                        after a create or update.
+                        Auto-refresh determines if the fill is always refreshed if not specified.
+                        May only be used when auto-refresh is true.
+                        Optional. Default is false.
+                    -->
+                    <use-fill-contains>false</use-fill-contains>
+                    <!--
+                       Determines whether to refresh the fill on updates or creates.
+                       Optional. Default value is true.
+                    -->
+                    <auto-refresh>true</auto-refresh>
+
+                    <!--
+                       Determines whether order is important for this filled collection. Allows for
+                       performance optimization when order is not important.
+                       Optional. Default value is true.
+                    -->
+                    <ordered>true</ordered>
+                </fill-method>
+            </server>
+        </properties>
+    </destination>
+
+
+</service>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ContactList.mxml 3 2007-02-15 21:39:58Z  $ -->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" creationComplete="handleCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.nagpals.contact.model.ContactModelLocator;
+			import com.nagpals.contact.events.SelectContactEvent;
+			import com.nagpals.contact.vo.ContactVO;
+			import com.nagpals.contact.events.GetContactsEvent;
+
+			[Bindable]
+			public var model : ContactModelLocator = ContactModelLocator.getInstance();
+
+			private function itemClickHandler(contact:Object):void{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new SelectContactEvent(contact));
+			}
+
+			public function handleCreationComplete():void{
+				getContacts();
+			}
+
+			private function getContacts() : void {
+				CairngormEventDispatcher.getInstance().dispatchEvent(new GetContactsEvent);
+			}
+
+		   public function processFilter(item:Object):Boolean{
+		      var result : Boolean=false;
+		      var resultInt : int = 0;
+		       if (
+		       		(item.firstName.toUpperCase().indexOf(filterText.text.toUpperCase()) >= 0)
+		       		|| (item.lastName.toUpperCase().indexOf(filterText.text.toUpperCase()) >= 0
+		       		|| (item.email.toUpperCase().indexOf(filterText.text.toUpperCase()) >= 0)
+		       		)
+		       	)
+		       		result=true;
+		      return result;
+		   }
+
+		   // we assign the processFilter callback only after we've got some data in the datagrid
+		   // or else filterFunction does not work
+		   private function renderHandler():void{
+		   		if (model.contactVOList != null && model.contactVOList.length){
+			   		model.contactVOList.filterFunction=processFilter;
+			   		filterText.enabled = true;
+		   		}
+		   }
+		]]>
+	</mx:Script>
+	<mx:DataGrid id="grid" top="40" bottom="0" left="0" right="0"
+		dataProvider="{model.contactVOList}"
+		itemClick="itemClickHandler(event.currentTarget.selectedItem);" render="renderHandler()">
+		<mx:columns>
+			<mx:DataGridColumn headerText="First Name" 	dataField="firstName"/>
+			<mx:DataGridColumn headerText="Last Name" 	dataField="lastName"/>
+			<mx:DataGridColumn headerText="Email" 		dataField="email"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:ControlBar left="0" right="0" top="0" height="40">
+		<mx:Label text="Filter Contacts"/>
+		<mx:TextInput id="filterText" change="model.contactVOList.refresh()" enabled="false"/>
+	</mx:ControlBar>
+
+</mx:Canvas>

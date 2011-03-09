@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ContactForm.mxml 3 2007-02-15 21:39:58Z  $ -->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:view="com.nagpals.contact.view.*"
+	creationComplete="onCreationComplete()"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.nagpals.contact.vo.ContactVO;
+			import com.nagpals.contact.model.ContactModelLocator;
+			import com.nagpals.contact.control.*;
+			import com.nagpals.contact.events.*;
+			import com.nagpals.contact.vo.ContactVO;
+
+			import mx.validators.Validator;
+	       	import mx.events.ValidationResultEvent;
+			
+			[Bindable]
+			private var model : ContactModelLocator = ContactModelLocator.getInstance();
+			private var vResult : Array;
+            private var aValidators:Array;
+
+            private function onCreationComplete():void{
+            	initValidatorArray();
+            }
+            
+            private function initValidatorArray():void {
+                aValidators=[firstNameV, lastNameV, emailV];
+            }
+
+			private function clickNew() : void {
+				CairngormEventDispatcher.getInstance().dispatchEvent(new NewContactEvent());
+			}
+			
+			private function clickSave() : void {
+				var contactVO : ContactVO = new ContactVO;
+				var vThisResult : ValidationResultEvent;
+				var isFormValid : Boolean = true;
+				var vResult : Array = mx.validators.Validator.validateAll(aValidators);
+
+				for (var i : int; i < vResult.length; i++){
+					vThisResult = vResult[i] as ValidationResultEvent;
+					if (vThisResult.type == ValidationResultEvent.INVALID){
+						isFormValid = false;
+						break
+					}else{
+						isFormValid = true;
+					}
+				}
+
+				if (isFormValid){
+					contactVO.id 					= model.contactVO.id;
+					contactVO.email 				= textEmail.text;
+					contactVO.firstName 			= textFirstName.text;
+					contactVO.lastName 				= textLastName.text;	
+	
+					model.contactVO					= contactVO;
+	
+					CairngormEventDispatcher.getInstance().dispatchEvent(new UpdateContactEvent(contactVO));
+				}
+			}
+
+			private function clickDelete() : void {
+				var contactVO : ContactVO = model.contactVO;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new DeleteContactEvent(contactVO));
+			}
+
+			public function isButtonEnabled(contactVO:ContactVO):Boolean{
+				if (contactVO == null){
+					return false;
+				}else{
+					return true;
+				}
+			}
+			
+			public function isFormFieldEnabled(contactVO:ContactVO):Boolean{
+				if (contactVO !=null){
+					return true;
+				}else{
+					return false;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Form id="formContact" top="0" left="0" right="0" bottom="0">
+		<mx:FormHeading label="Contact Details"/>
+		<mx:FormItem label="First Name" required="true">
+			<mx:TextInput id="textFirstName" 	text="{model.contactVO.firstName}" 	enabled="{isFormFieldEnabled(model.contactVO)}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Last Name" required="true">
+			<mx:TextInput id="textLastName" 	text="{model.contactVO.lastName}" 	enabled="{isFormFieldEnabled(model.contactVO)}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Email" required="true">
+			<mx:TextInput id="textEmail" 		text="{model.contactVO.email}" 		enabled="{isFormFieldEnabled(model.contactVO)}"/>
+		</mx:FormItem>
+		<mx:HBox horizontalAlign="right" width="238">
+			<mx:Button id="newbtn" 		label="New" 	click="clickNew()" />
+			<mx:Button id="savebtn" 	label="Save" 	click="clickSave()" 		enabled="{isButtonEnabled(model.contactVO)}"/>
+			<mx:Button id="deletebtn" 	label="Delete" 	click="clickDelete()" 		enabled="{isButtonEnabled(model.contactVO)}" />
+		</mx:HBox>
+	</mx:Form>
+	
+	<mx:StringValidator id="firstNameV" 	source="{textFirstName}" 	property="text"		trigger="{savebtn}" triggerEvent="clickSave()"/>
+	<mx:StringValidator id="lastNameV" 		source="{textLastName}" 	property="text"		trigger="{savebtn}" triggerEvent="clickSave()"/>
+	<mx:EmailValidator 	id="emailV"			source="{textEmail}" 		property="text"		trigger="{savebtn}" triggerEvent="clickSave()"/>
+
+</mx:Canvas>
