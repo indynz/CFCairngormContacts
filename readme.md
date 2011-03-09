@@ -15,7 +15,7 @@ For Version 1.0 (uses Cairngorm .99)
 
 (Originally posted on my blog: http://nagpals.com/posts/a-simple-contact-manager-a-flex-cairngorm-application/)
 
-1. Download and Unzip CFCairngormContacts.zip in the webroot of your ColdFusion server. This will create two folders:
+1. Download and Unzip [CFCairngormContacts.zip](http://nagpals.com/wp-content/uploads/2010/12/CFCairngormContacts.zip) in the webroot of your ColdFusion server. This will create two folders:
 
     * CFCairngormContacts (containing the Flex code for the application and Cairngorm 2.0 SWC)
     * com (which contains ColdFusion code) 
