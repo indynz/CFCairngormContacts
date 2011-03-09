@@ -7,6 +7,9 @@ But have a peak at the code and it should still be useful.
 
 What is CFCairngormContacts
 ===========================
+A sample Flex Contact Manager using the Cairngorm Framework and ColdFusion server-side objects. 
+
+It is simple contact manager that allows for contacts to be listed, added, edited and searched. The backend uses ColdFusion to store information in memory.I wrote this app to get my head around key Cairngorm concepts. I found this really helped to understand the basics of the framework. This application uses the Adobe Cairngorm framework.
 
 
 Installation
